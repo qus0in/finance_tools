@@ -9,3 +9,7 @@ def ko_etf_list() -> pd.DataFrame:
     data = response.json().get('result').get('etfItemList')
     df = pd.DataFrame(data)
     return df.set_index('itemcode')
+
+def not_contain(*kwds) -> str:
+    return ' and '.join([f'not itemname.str.contains("{kwd}")'
+            for kwd in kwds])
