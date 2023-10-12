@@ -8,4 +8,4 @@ def ko_etf_list() -> pd.DataFrame:
     response = requests.get(URL)
     data = response.json().get('result').get('etfItemList')
     df = pd.DataFrame(data)
-    return df
+    return df.set_index('itemcode')
