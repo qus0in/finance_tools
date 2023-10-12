@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
-
+from . import finance_tools
 setup(
     name='finance_tools',
-    version='0.0.3',
+    version=finance_tools.__version__,
     packages=find_packages(),
     install_requires=['requests', 'pandas'],
 )
