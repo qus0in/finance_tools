@@ -67,8 +67,8 @@ def get_filtered_etf_list(
     DataFrame: 필터링된 ETF 정보를 담고 있는 DataFrame입니다. 'itemcode'를 인덱스로 가집니다.
     
     """
-    # ko_etf_list() 함수로부터 ETF 목록을 가져옴 (이 부분은 예시이며 실제로는 해당 함수의 정의가 필요합니다.)
-    ko_etf = ko_etf_list()
+    # get_etf_list() 함수로부터 ETF 목록을 가져옴 (이 부분은 예시이며 실제로는 해당 함수의 정의가 필요합니다.)
+    ko_etf = get_etf_list()
     
     # 결측값을 제거
     ko_etf.dropna(inplace=True)
