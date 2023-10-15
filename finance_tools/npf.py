@@ -82,7 +82,10 @@ def get_filtered_etf_list(
     ko_etf.query(f'marketSum >= {market_cap}', inplace=True)
     
     # 'group' 컬럼 생성: 'itemname' 컬럼의 첫 단어를 제거한 나머지 문자열
-    ko_etf['group'] = ko_etf['itemname'].str.replace('^\S* ', '', regex=True).str.replace('TR$', '', regex=True)
+    ko_etf['group'] = ko_etf['itemname']\
+        .str.replace('^\S* ', '', regex=True)\
+        .str.replace('TR$', '', regex=True)\
+        .str.replace('(H)', '', regex=True)
     gb = ko_etf.reset_index().groupby('group')
     # 'group'으로 그룹화한 후 첫 번째 데이터를 선택하고, 'itemcode'를 인덱스로 설정하여 반환
     fst = gb.first()
