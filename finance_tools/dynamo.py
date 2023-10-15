@@ -14,3 +14,12 @@ class DynamoDB:
         headers = {'x-api-key': self.API_KEY}
         response = requests.post(self.URL, json=data, headers=headers)
         return response
+    
+    @aws_error_handler
+    def query(self, expr:str, attr_val:dict):
+        data = {'TableName': self.TABLE_NAME,
+                'KeyConditionExpression': expr,
+                'ExpressionAttributeValues': attr_val}
+        headers = {'x-api-key': self.API_KEY}
+        response = requests.post(self.URL + '/query', json=data, headers=headers)
+        return response

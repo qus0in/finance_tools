@@ -4,6 +4,7 @@ import pandas as pd
 from finance_tools.npf import get_filtered_etf_list
 from finance_tools.dynamo import DynamoDB
 from finance_tools.decorator import stopwatch
+import plotly.express as px
 
 class SwitchingStrategyHelper:
     def __init__(self,
@@ -17,7 +18,6 @@ class SwitchingStrategyHelper:
 
     @stopwatch
     def put_etf(self):
-        
         # etf DataFrame에서 itemname 칼럼의 아이템을 추출
         data = list(self.universe.reset_index().iterrows())
         
@@ -42,3 +42,13 @@ class SwitchingStrategyHelper:
             'updatedAt': {'S': now_str},
         }
         self.db_client.put_item(item)
+    
+    def draw_treemap(self):
+        u = self.universe.copy()
+        u['group_name'] = u.itemname.replace('^\S+ ', '', regex=True)
+        fig = px.treemap(
+            u,
+            path=['category', 'group_name'],
+            values='groupMarketSum'
+        )
+        return fig
