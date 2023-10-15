@@ -1,33 +1,44 @@
 from multiprocessing import Pool, cpu_count
 import pandas as pd
+
+from finance_tools.npf import get_filtered_etf_list
 from finance_tools.dynamo import DynamoDB
 from finance_tools.decorator import stopwatch
 
 class SwitchingStrategyHelper:
-    @classmethod
+    def __init__(self,
+                 db_client: DynamoDB,
+                 exclude_kwds,
+                 market_cap: int,
+                 use_multiprocessing: bool = False) -> None:
+        self.db_client:DynamoDB = db_client
+        self.universe:pd.DataFrame = get_filtered_etf_list(exclude_kwds, market_cap)
+        self.multiprocessing:bool = use_multiprocessing
+
     @stopwatch
-    def put_etf(cls, client: DynamoDB, etf: pd.DataFrame, multiprocessing: bool = False):
-        """
-        ETF 데이터를 DynamoDB 테이블에 추가합니다.
-
-        Parameters:
-        - client (DynamoDB): DynamoDB 클라이언트 객체
-        - etf (pd.DataFrame): 추가할 ETF 정보 (Pandas DataFrame 형태)
-        - multiprocessing (bool): 멀티프로세싱을 사용할지 여부 (기본값: False)
-
-        Returns:
-        - None
-        """
+    def put_etf(self):
         
         # etf DataFrame에서 itemname 칼럼의 아이템을 추출
-        data = etf.itemname.items()
+        data = list(self.universe.reset_index().iterrows())
         
         # 멀티프로세싱을 사용하지 않을 경우
-        if not multiprocessing:
+        if not self.multiprocessing:
             for row in data:
-                client.handle_data(row)
+                self.handle_data(row)
             return
         
         # 멀티프로세싱을 사용할 경우
         with Pool(cpu_count() * 2) as p:
-            p.map(client.handle_data, data)
+            p.map(self.handle_data, data)
+
+    def handle_data(self, row):
+        now_str = datetime.datetime.utcnow().strftime('%Y%m%d')
+        i, v = row
+        item = {
+            'itemcode': {'S': v['itemcode']},
+            'itemname': {'S': v['itemname']},
+            'marketSum': {'N': str(v['marketSum'])},
+            'groupMarketSum': {'N': str(v['groupMarketSum'])},
+            'updatedAt': {'S': now_str},
+        }
+        self.db_client.put_item(item)

@@ -31,19 +31,3 @@ class DynamoDB:
         headers = {'x-api-key': self.API_KEY}
         response = requests.post(self.URL, json=data, headers=headers)
         return response
-
-    def handle_data(self, row):
-        """
-        개별 데이터를 처리하여 테이블에 추가합니다.
-
-        Parameters:
-        - row (tuple): 처리할 데이터 (itemcode, itemname)
-        """
-        now_str = datetime.datetime.utcnow().strftime('%Y%m%d')
-        itemcode, itemname = row
-        item = {
-            'itemcode': {'S': itemcode},
-            'itemname': {'S': itemname},
-            'updatedAt': {'S': now_str}
-        }
-        self.put_item(item)
