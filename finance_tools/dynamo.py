@@ -1,7 +1,6 @@
 import datetime
 import requests
-from multiprocessing import Pool, cpu_count
-from finance_tools.decorator import aws_error_handler, stopwatch
+from finance_tools.decorator import aws_error_handler
 
 class DynamoDB:
     def __init__(self, URL: str, API_KEY: str, TABLE_NAME: str):
@@ -48,25 +47,3 @@ class DynamoDB:
             'updatedAt': {'S': now_str}
         }
         self.put_item(item)
-
-    @stopwatch
-    def put_etf(self, etf, multiprocessing=False):
-        """
-        ETF 데이터를 테이블에 추가합니다.
-
-        Parameters:
-        - etf (DataFrame): 추가할 ETF 정보 (DataFrame 형태)
-        - multiprocessing (bool): 멀티프로세싱을 사용할지 여부 (기본값: False)
-
-        Returns:
-        - None
-        """
-        data = etf.itemname.items()
-        if not multiprocessing:
-            for row in data:
-                self.handle_data(row)
-            return
-
-        # 멀티프로세싱을 사용하여 데이터 처리
-        with Pool(cpu_count() * 2) as p:
-            p.map(self.handle_data, data)
