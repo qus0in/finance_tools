@@ -15,6 +15,9 @@ def get_etf_list() -> pd.DataFrame:
     
     # 추출한 데이터를 DataFrame으로 변환
     df = pd.DataFrame(data)
+    df['category'] = df.etfTabCode.map(
+    {1: '국내지수', 2: '국내테마', 3: '국내파생',
+     4: '해외', 5: '원자재', 6: '채권', 7: '기타'})
     
     # 'itemcode' 컬럼을 인덱스로 설정 후 DataFrame 반환
     return df.set_index('itemcode')
