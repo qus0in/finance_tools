@@ -1,18 +1,7 @@
 import requests, ast
 import pandas as pd
 
-
 def get_etf_list() -> pd.DataFrame:
-    """
-    Naver Finance API를 이용하여 ETF 목록 정보를 DataFrame 형태로 반환합니다.
-    
-    Parameters:
-    없음
-    
-    Returns:
-    DataFrame: 'itemcode'를 인덱스로 가지며, ETF 정보가 컬럼에 담겨 있습니다.
-    
-    """
     # Naver Finance API의 도메인과 경로 설정
     DOMAIN = 'https://finance.naver.com'
     PATH = '/api/sise/etfItemList.nhn'
@@ -31,18 +20,7 @@ def get_etf_list() -> pd.DataFrame:
     return df.set_index('itemcode')
 
 
-def get_exclude_query(*kwds, column_name:str='itemname') -> str:
-    """
-    주어진 키워드를 이용하여 Pandas DataFrame에서 특정 컬럼에서 해당 키워드를 제외하는 쿼리 문자열을 생성합니다.
-    
-    Parameters:
-    *kwds: 가변 인자, 제외하려는 키워드들입니다. 문자열 형태의 여러 키워드를 입력할 수 있습니다.
-    column_name (str, optional): 키워드를 제외할 컬럼의 이름입니다. 기본값은 'itemname'.
-    
-    Returns:
-    str: 키워드를 제외하는데 사용할 수 있는 Pandas DataFrame 쿼리 문자열입니다.
-    
-    """
+def get_exclude_query(*kwds:list, column_name:str='itemname') -> str:
     # 주어진 키워드들을 사용하여 "not column_name.str.contains('kwd')" 형태의 쿼리 문자열을 리스트로 생성
     # 예를 들어, kwds가 ['apple', 'banana']이고 column_name이 'itemname'이라면,
     # 결과 리스트는 ['not itemname.str.contains("apple")', 'not itemname.str.contains("banana")']
@@ -53,20 +31,8 @@ def get_exclude_query(*kwds, column_name:str='itemname') -> str:
 
 
 def get_filtered_etf_list(
-    exclude_kwds=('합성', '액티브', '레버리지', '2X',
-                '혼합', '금리', '단기', '3년', '배당', 'TR'),
-    market_cap:int=1000) -> pd.DataFrame:
-    """
-    특정 키워드를 제외하고 시가총액이 일정 이상인 ETF 목록을 필터링하여 DataFrame으로 반환합니다.
-    
-    Parameters:
-    exclude_kwds (tuple, optional): 제외할 키워드들의 튜플입니다. 기본값은 ('합성', '액티브', '레버리지', '2X', '혼합', '금리', '단기', '3년', '배당', 'TR').
-    market_cap (int, optional): 필터링할 시가총액의 최소 값입니다. 기본값은 1000.
-    
-    Returns:
-    DataFrame: 필터링된 ETF 정보를 담고 있는 DataFrame입니다. 'itemcode'를 인덱스로 가집니다.
-    
-    """
+    exclude_kwds:list,
+    market_cap:int) -> pd.DataFrame:
     # get_etf_list() 함수로부터 ETF 목록을 가져옴 (이 부분은 예시이며 실제로는 해당 함수의 정의가 필요합니다.)
     ko_etf = get_etf_list()
     
@@ -96,16 +62,6 @@ def get_filtered_etf_list(
 
 
 def get_prices(symbol: str) -> pd.DataFrame:
-    """
-    Naver Finance API를 이용하여 주식 시세 정보를 DataFrame 형태로 반환합니다.
-    
-    Parameters:
-    symbol (str): 조회할 주식의 심볼 혹은 코드. 예를 들어, '005930'이면 삼성전자.
-    
-    Returns:
-    DataFrame: 날짜를 인덱스로 가지고, 각 컬럼에는 '시가', '고가', '저가', '종가', '거래량', '외국인소진율' 등의 정보를 담고 있습니다.
-    
-    """
     # Naver Finance API의 도메인과 경로 설정
     DOMAIN = 'https://api.finance.naver.com'
     PATH = 'siseJson.naver'

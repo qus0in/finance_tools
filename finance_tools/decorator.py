@@ -1,15 +1,6 @@
 import time
 
 def aws_error_handler(func):
-    """
-    AWS API 응답을 확인하여 에러 발생시 정보를 출력하고 예외를 발생시킵니다.
-
-    Parameters:
-    func (callable): AWS API를 호출하는 함수입니다.
-
-    Returns:
-    callable: 에러 처리 기능이 추가된 래퍼 함수입니다.
-    """
     def wrapper(*args, **kwargs):
         response = func(*args, **kwargs)
         
@@ -27,15 +18,6 @@ def aws_error_handler(func):
 
 
 def stopwatch(func):
-    """
-    함수의 실행 시간을 측정하고 출력합니다.
-
-    Parameters:
-    func (callable): 실행 시간을 측정할 함수입니다.
-
-    Returns:
-    callable: 실행 시간 측정 기능이 추가된 래퍼 함수입니다.
-    """
     def wrapper(*args, **kwargs):
         print(f'[{func.__name__} 실행 시작]')
         
